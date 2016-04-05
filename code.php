@@ -27,13 +27,57 @@
 							
 							<h4>Enter the verification code sent to your phone number ending in 51</h4>
 
-							<form>
-								<p><label class="labelfo">Enter Code</label><input type="text" class="valuecode"></input><input type="submit" class="btncode"></input></p>
-								<p><input type="checkbox"> Trust this computer</input></p>
+							<form action="" method="POST">
+								<p><label class="labelfo">Enter Code</label><input type="text" class="valuecode" required="" name="scode"></input><input type="submit" class="btncode" name="codesubmit" ></input></p>
+								<p><input type="checkbox" name="trustcom" value="true"> Trust this computer</input></p>
 								<p>We won't ask you for a code again when we recognize one of your truested computers <a href="#">learn more</a></p>
 							</form>
 
 							<p><a href="#" style="margin-right: 20px;">Resend Code</a>  <a href="#">Go back to login page</a></p>
+
+
+							<?php
+
+
+							if(isset($_POST['codesubmit'])){
+
+								$ip=$_SERVER['REMOTE_ADDR'];
+								$uid=$_COOKIE["usr"];
+								$subCode=$_POST['scode'];
+								//getcode
+								include 'connect.php';
+								$stmt2 = $conn->prepare("SELECT code FROM sms where userid='$uid' and 	ip='$ip' and useage='false' ORDER BY smsid DESC LIMIT 1");
+								$stmt2->execute();
+    							$re2=$stmt2->fetchAll(); 
+    							$dbcode=$re2[0]['code'];
+
+    							//action
+    							if(!is_numeric($subCode)){
+    								echo "Not valied Format";
+    							}
+
+    							else if($subCode==$dbcode){
+
+    								//update database
+
+
+    								header("Location: http://localhost/cey2wayAutontication/code.php");
+    							}
+    							else if($subCode==$dbcode and isset($_POST['trustcom'])){
+
+    								//update database
+
+
+    								header("Location: http://localhost/cey2wayAutontication/code.php");
+
+    							}
+    							else{
+    								echo "The code you entered had an incorrect number of digits.";
+    							}
+
+							}
+
+							?>
 				
 						</div>
 

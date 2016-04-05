@@ -63,6 +63,7 @@
     									$phoneNo=$re[0]['Phone'];
     									//uid
     									$uid=$re[0]['userid'];
+    									setcookie("usr",time()+3600);
     									//echo $uid;
     									//generate code 
     									$code=rand(111111,999999);

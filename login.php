@@ -56,48 +56,61 @@
 
 									if($re[0]['no']==1){
 
-										//get user phone no
+										//get phone no
 										$stmt2 = $conn->prepare("SELECT Phone, userid FROM user where username='$uname' and password='$upass'");
 										$stmt2->execute();
     									$re=$stmt2->fetchAll(); 
     									$phoneNo=$re[0]['Phone'];
     									//uid
     									$uid=$re[0]['userid'];
-    									setcookie("usr",time()+3600);
-    									//echo $uid;
-    									//generate code 
-    									$code=rand(111111,999999);
+    									setcookie("usr", $uid, time()+3600);
+    									setcookie("pho", $phoneNo, time()+3600);
 
-    									//get ip
+    									//send sms
     									$ip=$_SERVER['REMOTE_ADDR'];
-    									//echo $ip;
 
-    									//sms code
-										$sms="sudo gammu sendsms TEXT $phoneNo -text '$code is your LawEnvoy verification code'";
-										$res=exec($sms);
+											$stmt2 = $conn->prepare("SELECT trust  FROM `sms` WHERE userid='$uid' and ip='$ip' and `useage`='used' ORDER BY smsid DESC LIMIT 1");
+											$stmt2->execute();
+							    			$re2=$stmt2->fetchAll(); var_dump($re2);
+
+							    			$dbres=$re2[0]['trust'];
+							    			if($dbres=="Yes"){
+							    				header("Location: http://www.lawenvoy.com");
+							    			}
+							    			else{
+
+							    				//need to send sms
+							    				$code=rand(111111,999999);
+
+							    				//get ip
+							    				$ip=$_SERVER['REMOTE_ADDR'];
+							    									//echo $ip;
+
+							    				//sms code
+												$sms="sudo gammu sendsms TEXT $phoneNo -text '$code is your LawEnvoy verification code'";
+												$res=exec($sms);
+																	
+												//Sending SMS 1/1....waiting for network answer..OK, message reference=118
+
+												//echo substr("Sending SMS 1/1....waiting for network answer..OK, message reference=118Message send sucessfully",72);
+
+																	
+												if(substr("$res",0,49) == "Sending SMS 1/1....waiting for network answer..OK"){
+													//echo "Message send sucessfully";					
+													//update database
+													$smsdb = "INSERT INTO sms (userid, ip, code)VALUES ('$uid', '$ip', '$code')";
+													$conn->query($smsdb);					
+												}
+												else {
+													echo  "Message not send <br> $res"  ;
+												}
+												//echo "submit to code";
+												header("Location: http://localhost/cey2wayAutontication/code.php");
+    										}
+
+    									//derect
+
 										
-										//Sending SMS 1/1....waiting for network answer..OK, message reference=118
-
-										//echo substr("Sending SMS 1/1....waiting for network answer..OK, message reference=118Message send sucessfully",72);
-
-										
-										if(substr("$res",0,49) == "Sending SMS 1/1....waiting for network answer..OK"){
-											//echo "Message send sucessfully";
-											
-
-											//update database
-											$smsdb = "INSERT INTO sms (userid, ip, code)VALUES ('$uid', '$ip', '$code')";
-											$conn->query($smsdb);
-
-											//redirect to code page
-											header("Location: http://localhost/cey2wayAutontication/code.php");
-										 }
-										 else {
-
-										 	echo  "Message not send <br> $res"  ;
-
-
-										 }
 									}
 									else{
 										echo  "Wrong User name & Password combination";
@@ -126,6 +139,9 @@
 				public function clear(){
 					document.getElementById("demo").style.visibility="visible";
 				}
+
+
+				
 			</script>				
 </html>
 

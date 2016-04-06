@@ -49,7 +49,7 @@
 							<h4>Enter the verification code sent to your phone number ending in <?php echo substr($phoneNo, 10); ?></h4>
 
 							<form action="" method="POST">
-								<p><label class="labelfo">Enter Code</label><input type="text" class="valuecode" required="" name="scode"></input><input type="submit" class="btncode" name="codesubmit"  onmouseup="teest()"></input></p>
+								<p><label class="labelfo">Enter Code</label><input type="text" class="valuecode" required="" name="scode" autocomplete="off"></input><input type="submit" class="btncode" name="codesubmit"  onmouseup="teest()"></input></p>
 								<p><input type="checkbox" name="trustcom" value="true"> Trust this computer</input></p>
 								<p>We won't ask you for a code again when we recognize one of your truested computers <a href="#">learn more</a></p>
 							</form>
